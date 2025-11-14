@@ -1,0 +1,2971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediAI Pro - Advanced AI Healthcare Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #3a86ff;
+            --primary-dark: #2667cc;
+            --primary-light: #5d9cff;
+            --secondary: #00dbde;
+            --secondary-dark: #00b4b7;
+            --accent: #ff006e;
+            --success: #38b000;
+            --warning: #ff9e00;
+            --danger: #d00000;
+            --dark: #1a1a2e;
+            --darker: #0a2463;
+            --light: #ffffff;
+            --gray: #f5f7fa;
+            --text: #333333;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 50%, #16213e 100%);
+            color: var(--light);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            transform-style: preserve-3d;
+            transform: perspective(500px) rotateY(15deg);
+            transition: transform 0.5s;
+        }
+
+        .logo:hover {
+            transform: perspective(500px) rotateY(-15deg);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding: 5px 0;
+            transition: color 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--primary);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            transition: width 0.3s;
+        }
+
+        nav a:hover::after, nav a.active::after {
+            width: 100%;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateX(10deg);
+            text-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: perspective(1000px) rotateX(10deg) translateY(0);
+            }
+            50% {
+                transform: perspective(1000px) rotateX(10deg) translateY(-20px);
+            }
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transform-style: preserve-3d;
+            transform: perspective(500px) translateZ(0);
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: perspective(500px) translateZ(20px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .cube-container {
+            width: 200px;
+            height: 200px;
+            margin: 50px auto;
+            perspective: 800px;
+            transform-style: preserve-3d;
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotate 15s infinite linear;
+        }
+
+        .face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, rgba(58, 134, 255, 0.7), rgba(0, 219, 222, 0.7));
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            backface-visibility: visible;
+        }
+
+        .front {
+            transform: translateZ(100px);
+        }
+        .back {
+            transform: translateZ(-100px) rotateY(180deg);
+        }
+        .right {
+            transform: translateX(100px) rotateY(90deg);
+        }
+        .left {
+            transform: translateX(-100px) rotateY(-90deg);
+        }
+        .top {
+            transform: translateY(-100px) rotateX(90deg);
+        }
+        .bottom {
+            transform: translateY(100px) rotateX(-90deg);
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotateX(0) rotateY(0) rotateZ(0);
+            }
+            100% {
+                transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+            }
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 100px 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transform-style: preserve-3d;
+            transform: perspective(500px) translateZ(0);
+            transition: transform 0.5s, box-shadow 0.5s;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card:hover {
+            transform: perspective(500px) translateZ(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: floatElement 15s infinite linear;
+        }
+
+        .floating-element:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 80%;
+            animation-duration: 20s;
+        }
+
+        .floating-element:nth-child(3) {
+            width: 30px;
+            height: 30px;
+            top: 70%;
+            left: 10%;
+            animation-duration: 25s;
+        }
+
+        .floating-element:nth-child(4) {
+            width: 60px;
+            height: 60px;
+            top: 40%;
+            left: 90%;
+            animation-duration: 18s;
+        }
+
+        .floating-element:nth-child(5) {
+            width: 40px;
+            height: 40px;
+            top: 80%;
+            left: 70%;
+            animation-duration: 22s;
+        }
+
+        @keyframes floatElement {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 100px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* AI MEDICAL FEATURES */
+        .ai-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 60px 0;
+            transform-style: preserve-3d;
+            transform: perspective(500px) translateZ(0);
+            transition: transform 0.5s;
+            backdrop-filter: blur(10px);
+        }
+
+        .ai-section:hover {
+            transform: perspective(500px) translateZ(10px);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .ai-features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .ai-feature {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transform-style: preserve-3d;
+            transform: perspective(400px) translateZ(0);
+            transition: transform 0.4s;
+        }
+
+        .ai-feature:hover {
+            transform: perspective(400px) translateZ(15px);
+        }
+
+        .ai-feature i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            transform-style: preserve-3d;
+            transform: perspective(400px) translateZ(0);
+            transition: transform 0.4s;
+        }
+
+        .dashboard-card:hover {
+            transform: perspective(400px) translateZ(10px);
+        }
+
+        .chart-container {
+            height: 200px;
+            margin-top: 20px;
+        }
+
+        .symptom-checker {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .symptom-input {
+            padding: 15px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .symptom-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .diagnosis-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 219, 222, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .medical-avatar {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            transform-style: preserve-3d;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(58, 134, 255, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 20px rgba(58, 134, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(58, 134, 255, 0);
+            }
+        }
+
+        .health-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .metric {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transform-style: preserve-3d;
+            transform: perspective(400px) translateZ(0);
+            transition: transform 0.3s;
+        }
+
+        .metric:hover {
+            transform: perspective(400px) translateZ(10px);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .appointment-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            outline: 2px solid var(--primary);
+        }
+
+        .form-group:last-child {
+            grid-column: 1 / -1;
+        }
+
+        .treatment-plan {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(0, 219, 222, 0.1);
+            border-radius: 15px;
+            transform-style: preserve-3d;
+            transform: perspective(400px) translateZ(0);
+            transition: transform 0.4s;
+        }
+
+        .treatment-plan:hover {
+            transform: perspective(400px) translateZ(10px);
+        }
+
+        .plan-steps {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .plan-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* NEW AI FEATURES */
+        .ai-prediction {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            transform-style: preserve-3d;
+            transform: perspective(400px) translateZ(0);
+            transition: transform 0.4s;
+        }
+
+        .ai-prediction:hover {
+            transform: perspective(400px) translateZ(10px);
+        }
+
+        .prediction-bar {
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .prediction-fill {
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+        }
+
+        .drug-interaction {
+            background: rgba(255, 0, 110, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid var(--accent);
+        }
+
+        .medical-image {
+            width: 100%;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .medical-image:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .medical-image i {
+            font-size: 4rem;
+            color: var(--primary);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(150%);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .patient-records {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .record-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 20px;
+            transform-style: preserve-3d;
+            transform: perspective(400px) translateZ(0);
+            transition: transform 0.4s;
+        }
+
+        .record-card:hover {
+            transform: perspective(400px) translateZ(10px);
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .record-date {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .record-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-completed {
+            background: rgba(0, 219, 222, 0.2);
+            color: var(--secondary);
+        }
+
+        .status-pending {
+            background: rgba(255, 0, 110, 0.2);
+            color: var(--accent);
+        }
+
+        /* NEW ADVANCED FEATURES */
+        .ai-chatbot {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+
+        .ai-chatbot:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-header {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+
+        .message.bot {
+            background: rgba(58, 134, 255, 0.1);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.user {
+            background: rgba(0, 219, 222, 0.1);
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .chat-input button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .ai-insights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .insight-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 20px;
+            transform-style: preserve-3d;
+            transform: perspective(400px) translateZ(0);
+            transition: transform 0.4s;
+        }
+
+        .insight-card:hover {
+            transform: perspective(400px) translateZ(10px);
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .insight-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(58, 134, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .progress-ring {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .progress-ring-circle {
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* NEW ADVANCED AI FEATURES */
+        .ai-research-lab {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            transform-style: preserve-3d;
+            transform: perspective(500px) translateZ(0);
+            transition: transform 0.5s;
+        }
+
+        .ai-research-lab:hover {
+            transform: perspective(500px) translateZ(10px);
+        }
+
+        .research-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .research-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            transform-style: preserve-3d;
+            transform: perspective(400px) translateZ(0);
+            transition: transform 0.4s;
+        }
+
+        .research-card:hover {
+            transform: perspective(400px) translateZ(10px);
+        }
+
+        .research-progress {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .research-progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 5px;
+            transition: width 1s ease-in-out;
+        }
+
+        .virtual-reality {
+            width: 100%;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vr-headset {
+            font-size: 5rem;
+            color: var(--primary);
+            animation: vrFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes vrFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .vr-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .vr-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .vr-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .ai-predictive-model {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .model-visualization {
+            width: 100%;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .neural-network {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .neuron {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .connection {
+            position: absolute;
+            height: 2px;
+            background: var(--secondary);
+            transform-origin: 0 0;
+        }
+
+        .health-forecast {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .forecast-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .forecast-timeline::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .timeline-point {
+            position: relative;
+            text-align: center;
+            width: 80px;
+        }
+
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-label {
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+
+        .timeline-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .ai-surgery-simulator {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .surgery-canvas {
+            width: 100%;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .surgery-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .surgery-btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .surgery-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            nav ul {
+                gap: 15px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .appointment-form {
+                grid-template-columns: 1fr;
+            }
+
+            .ai-features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-window {
+                width: 300px;
+                height: 400px;
+            }
+
+            .research-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+
+    <div class="notification" id="notification">
+        <span id="notification-text">Notification message</span>
+    </div>
+
+    <!-- AI Chatbot -->
+    <div class="ai-chatbot" id="chatbot-toggle">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <div class="chat-window" id="chat-window">
+        <div class="chat-header">
+            <h3>MediAI Assistant</h3>
+            <i class="fas fa-times" id="close-chat"></i>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot">
+                Hello! I'm your MediAI assistant. How can I help you today?
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chat-input" placeholder="Type your message...">
+            <button id="send-message"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">MediAI Pro</div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="nav-link active" data-page="home">Home</a></li>
+                    <li><a href="#" class="nav-link" data-page="diagnostics">AI Diagnostics</a></li>
+                    <li><a href="#" class="nav-link" data-page="health-tracking">Health Tracking</a></li>
+                    <li><a href="#" class="nav-link" data-page="appointments">Appointments</a></li>
+                    <li><a href="#" class="nav-link" data-page="medical-imaging">Medical Imaging</a></li>
+                    <li><a href="#" class="nav-link" data-page="patient-records">Patient Records</a></li>
+                    <li><a href="#" class="nav-link" data-page="ai-research">AI Research</a></li>
+                    <li><a href="#" class="nav-link" data-page="surgery-simulator">Surgery Simulator</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- HOME PAGE -->
+        <section id="home" class="page active">
+            <div class="hero">
+                <h1>ADVANCED AI HEALTHCARE</h1>
+                <p>Experience the future of medicine with our next-generation AI diagnostics, real-time health monitoring, and personalized treatment plans powered by deep learning.</p>
+                <button class="btn" id="get-analysis-btn">GET COMPREHENSIVE HEALTH ANALYSIS</button>
+                
+                <div class="cube-container">
+                    <div class="cube">
+                        <div class="face front">AI</div>
+                        <div class="face back">MED</div>
+                        <div class="face right">3D</div>
+                        <div class="face left">CARE</div>
+                        <div class="face top">HEALTH</div>
+                        <div class="face bottom">AI</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">✧</div>
+                    <h3>3D Body Scanning</h3>
+                    <p>Advanced 3D visualization of anatomy and medical conditions with real-time AI analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">◉</div>
+                    <h3>AI Diagnostics</h3>
+                    <p>Deep learning algorithms for accurate disease detection with 98.7% accuracy.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">◇</div>
+                    <h3>Health Monitoring</h3>
+                    <p>Real-time tracking of vital signs and health metrics with predictive analytics.</p>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">AI Health Assistant</h2>
+                <div class="medical-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                
+                <div class="symptom-checker">
+                    <h3>Advanced Symptom Checker</h3>
+                    <input type="text" class="symptom-input" id="symptom-input" placeholder="Describe your symptoms in detail...">
+                    <button class="btn" id="analyze-symptoms-btn">
+                        <span id="analyze-text">ANALYZE SYMPTOMS WITH AI</span>
+                        <span id="analyze-loading" class="loading" style="display: none;"></span>
+                    </button>
+                    
+                    <div class="diagnosis-result" id="diagnosis-result" style="display: none;">
+                        <h4>AI Diagnosis Result</h4>
+                        <p id="diagnosis-text">Based on your symptoms, our AI has detected a 92% probability of seasonal allergies. Consider consulting with an allergist for confirmation.</p>
+                        <div class="health-metrics">
+                            <div class="metric">
+                                <div>Confidence</div>
+                                <div class="metric-value">92%</div>
+                            </div>
+                            <div class="metric">
+                                <div>Severity</div>
+                                <div class="metric-value">Mild</div>
+                            </div>
+                            <div class="metric">
+                                <div>Urgency</div>
+                                <div class="metric-value">Low</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">Health Dashboard</h2>
+                <div class="dashboard">
+                    <div class="dashboard-card">
+                        <h3>Heart Rate Analysis</h3>
+                        <div class="chart-container">
+                            <canvas id="heartRateChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Sleep Patterns</h3>
+                        <div class="chart-container">
+                            <canvas id="sleepChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Activity Tracking</h3>
+                        <div class="chart-container">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">AI-Powered Treatment Plan</h2>
+                <div class="treatment-plan">
+                    <h3>Personalized Care Plan</h3>
+                    <p>Our AI has developed this customized treatment plan based on your health profile and diagnostic results.</p>
+                    
+                    <div class="plan-steps">
+                        <div class="plan-step">
+                            <div class="step-number">1</div>
+                            <div>Take antihistamine medication daily for 2 weeks</div>
+                        </div>
+                        <div class="plan-step">
+                            <div class="step-number">2</div>
+                            <div>Use nasal spray before bedtime</div>
+                        </div>
+                        <div class="plan-step">
+                            <div class="step-number">3</div>
+                            <div>Avoid known allergens (pollen, dust)</div>
+                        </div>
+                        <div class="plan-step">
+                            <div class="step-number">4</div>
+                            <div>Follow up with AI health assistant in 7 days</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">Advanced AI Medical Features</h2>
+                <div class="ai-features-grid">
+                    <div class="ai-feature">
+                        <i class="fas fa-brain"></i>
+                        <h3>Predictive Analytics</h3>
+                        <p>AI predicts potential health risks based on your data with 94% accuracy</p>
+                    </div>
+                    <div class="ai-feature">
+                        <i class="fas fa-dna"></i>
+                        <h3>Genomic Analysis</h3>
+                        <p>Personalized medicine based on genetic markers and biomarkers</p>
+                    </div>
+                    <div class="ai-feature">
+                        <i class="fas fa-x-ray"></i>
+                        <h3>Medical Imaging AI</h3>
+                        <p>Advanced analysis of X-rays, MRIs, and CT scans with deep learning</p>
+                    </div>
+                    <div class="ai-feature">
+                        <i class="fas fa-pills"></i>
+                        <h3>Drug Interaction Checker</h3>
+                        <p>AI identifies potential medication conflicts with 99.2% accuracy</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: AI Research Lab Preview -->
+            <div class="ai-research-lab">
+                <h2 class="section-title">AI Research Lab</h2>
+                <p>Our cutting-edge AI research lab is developing next-generation healthcare technologies.</p>
+                
+                <div class="research-grid">
+                    <div class="research-card">
+                        <h3>Drug Discovery AI</h3>
+                        <p>Accelerating pharmaceutical research with machine learning</p>
+                        <div class="research-progress">
+                            <div class="research-progress-fill" style="width: 75%;"></div>
+                        </div>
+                        <p>75% Complete</p>
+                    </div>
+                    <div class="research-card">
+                        <h3>Surgical Robotics</h3>
+                        <p>AI-powered precision surgery with robotic assistance</p>
+                        <div class="research-progress">
+                            <div class="research-progress-fill" style="width: 60%;"></div>
+                        </div>
+                        <p>60% Complete</p>
+                    </div>
+                    <div class="research-card">
+                        <h3>Pandemic Prediction</h3>
+                        <p>Early detection and modeling of infectious disease outbreaks</p>
+                        <div class="research-progress">
+                            <div class="research-progress-fill" style="width: 82%;"></div>
+                        </div>
+                        <p>82% Complete</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: Virtual Reality Medical Training -->
+            <div class="ai-section">
+                <h2 class="section-title">Virtual Reality Medical Training</h2>
+                <div class="virtual-reality">
+                    <div class="vr-headset">
+                        <i class="fas fa-vr-cardboard"></i>
+                    </div>
+                    <div class="vr-controls">
+                        <div class="vr-btn"><i class="fas fa-play"></i></div>
+                        <div class="vr-btn"><i class="fas fa-pause"></i></div>
+                        <div class="vr-btn"><i class="fas fa-redo"></i></div>
+                    </div>
+                </div>
+                <p>Experience immersive medical training with our VR platform. Practice complex procedures in a risk-free environment with AI guidance.</p>
+            </div>
+        </section>
+
+        <!-- AI DIAGNOSTICS PAGE -->
+        <section id="diagnostics" class="page">
+            <div class="hero">
+                <h1>AI DIAGNOSTICS</h1>
+                <p>Advanced machine learning algorithms for accurate disease detection and health assessment with real-time analytics.</p>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">Comprehensive Health Assessment</h2>
+                
+                <div class="health-metrics">
+                    <div class="metric">
+                        <div>Heart Rate</div>
+                        <div class="metric-value">72 BPM</div>
+                        <div>Normal</div>
+                    </div>
+                    <div class="metric">
+                        <div>Blood Pressure</div>
+                        <div class="metric-value">120/80</div>
+                        <div>Optimal</div>
+                    </div>
+                    <div class="metric">
+                        <div>Blood Oxygen</div>
+                        <div class="metric-value">98%</div>
+                        <div>Excellent</div>
+                    </div>
+                    <div class="metric">
+                        <div>Temperature</div>
+                        <div class="metric-value">98.6°F</div>
+                        <div>Normal</div>
+                    </div>
+                </div>
+
+                <div class="ai-prediction">
+                    <h3>Health Risk Assessment</h3>
+                    <p>Based on your health data, our AI has calculated the following risk factors:</p>
+                    
+                    <div class="prediction-item">
+                        <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                            <span>Cardiovascular Disease</span>
+                            <span>12%</span>
+                        </div>
+                        <div class="prediction-bar">
+                            <div class="prediction-fill" style="width: 12%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="prediction-item">
+                        <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                            <span>Diabetes</span>
+                            <span>8%</span>
+                        </div>
+                        <div class="prediction-bar">
+                            <div class="prediction-fill" style="width: 8%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="prediction-item">
+                        <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                            <span>Respiratory Issues</span>
+                            <span>5%</span>
+                        </div>
+                        <div class="prediction-bar">
+                            <div class="prediction-fill" style="width: 5%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="drug-interaction">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Medication Alert</h3>
+                    <p>Potential interaction detected between your current medications. Consult with your doctor.</p>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">AI-Powered Lab Analysis</h2>
+                <div class="dashboard">
+                    <div class="dashboard-card">
+                        <h3>Blood Test Results</h3>
+                        <div class="chart-container">
+                            <canvas id="bloodTestChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Cholesterol Levels</h3>
+                        <div class="chart-container">
+                            <canvas id="cholesterolChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">AI Health Insights</h2>
+                <div class="ai-insights">
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <div class="insight-icon">
+                                <i class="fas fa-heartbeat"></i>
+                            </div>
+                            <div>
+                                <h3>Cardiovascular Health</h3>
+                                <p>Excellent condition</p>
+                            </div>
+                        </div>
+                        <div class="progress-ring">
+                            <svg width="80" height="80" viewBox="0 0 80 80">
+                                <circle class="progress-ring-circle" stroke="#3a86ff" stroke-width="8" fill="transparent" r="36" cx="40" cy="40" stroke-dasharray="226.194" stroke-dashoffset="22.6194"/>
+                            </svg>
+                            <div class="progress-text">90%</div>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <div class="insight-icon">
+                                <i class="fas fa-lungs"></i>
+                            </div>
+                            <div>
+                                <h3>Respiratory Health</h3>
+                                <p>Good condition</p>
+                            </div>
+                        </div>
+                        <div class="progress-ring">
+                            <svg width="80" height="80" viewBox="0 0 80 80">
+                                <circle class="progress-ring-circle" stroke="#00dbde" stroke-width="8" fill="transparent" r="36" cx="40" cy="40" stroke-dasharray="226.194" stroke-dashoffset="45.2388"/>
+                            </svg>
+                            <div class="progress-text">80%</div>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <div class="insight-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div>
+                                <h3>Cognitive Health</h3>
+                                <p>Excellent condition</p>
+                            </div>
+                        </div>
+                        <div class="progress-ring">
+                            <svg width="80" height="80" viewBox="0 0 80 80">
+                                <circle class="progress-ring-circle" stroke="#ff006e" stroke-width="8" fill="transparent" r="36" cx="40" cy="40" stroke-dasharray="226.194" stroke-dashoffset="11.3097"/>
+                            </svg>
+                            <div class="progress-text">95%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: AI Predictive Model Visualization -->
+            <div class="ai-predictive-model">
+                <h2 class="section-title">AI Predictive Model</h2>
+                <p>Our neural network analyzes thousands of data points to predict health outcomes with 96.3% accuracy.</p>
+                
+                <div class="model-visualization" id="neural-network">
+                    <!-- Neural network visualization will be generated by JavaScript -->
+                </div>
+                
+                <div class="health-metrics">
+                    <div class="metric">
+                        <div>Model Accuracy</div>
+                        <div class="metric-value">96.3%</div>
+                    </div>
+                    <div class="metric">
+                        <div>Training Data</div>
+                        <div class="metric-value">2.4M</div>
+                    </div>
+                    <div class="metric">
+                        <div>Prediction Speed</div>
+                        <div class="metric-value">0.8s</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: Health Forecast -->
+            <div class="health-forecast">
+                <h2 class="section-title">Health Forecast</h2>
+                <p>AI-powered prediction of your health trajectory based on current metrics and lifestyle factors.</p>
+                
+                <div class="forecast-timeline">
+                    <div class="timeline-point">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-label">Now</div>
+                        <div class="timeline-value">92%</div>
+                    </div>
+                    <div class="timeline-point">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-label">3 Months</div>
+                        <div class="timeline-value">89%</div>
+                    </div>
+                    <div class="timeline-point">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-label">6 Months</div>
+                        <div class="timeline-value">85%</div>
+                    </div>
+                    <div class="timeline-point">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-label">1 Year</div>
+                        <div class="timeline-value">81%</div>
+                    </div>
+                </div>
+                
+                <div class="treatment-plan" style="margin-top: 30px;">
+                    <h3>AI Recommendations to Improve Health Outlook</h3>
+                    <div class="plan-steps">
+                        <div class="plan-step">
+                            <div class="step-number">1</div>
+                            <div>Increase weekly exercise to 150 minutes of moderate activity</div>
+                        </div>
+                        <div class="plan-step">
+                            <div class="step-number">2</div>
+                            <div>Reduce processed food consumption by 30%</div>
+                        </div>
+                        <div class="plan-step">
+                            <div class="step-number">3</div>
+                            <div>Implement stress reduction techniques daily</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HEALTH TRACKING PAGE -->
+        <section id="health-tracking" class="page">
+            <div class="hero">
+                <h1>HEALTH TRACKING</h1>
+                <p>Monitor your health metrics in real-time with our advanced tracking system and AI-powered insights.</p>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">Real-Time Health Monitoring</h2>
+                
+                <div class="health-metrics">
+                    <div class="metric">
+                        <div>Steps Today</div>
+                        <div class="metric-value">8,542</div>
+                        <div>85% of goal</div>
+                    </div>
+                    <div class="metric">
+                        <div>Calories Burned</div>
+                        <div class="metric-value">420</div>
+                        <div>Active day</div>
+                    </div>
+                    <div class="metric">
+                        <div>Sleep Quality</div>
+                        <div class="metric-value">87%</div>
+                        <div>Good rest</div>
+                    </div>
+                    <div class="metric">
+                        <div>Water Intake</div>
+                        <div class="metric-value">1.8L</div>
+                        <div>90% of goal</div>
+                    </div>
+                </div>
+
+                <div class="dashboard">
+                    <div class="dashboard-card">
+                        <h3>Weekly Activity</h3>
+                        <div class="chart-container">
+                            <canvas id="weeklyActivityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Heart Rate Variability</h3>
+                        <div class="chart-container">
+                            <canvas id="hrvChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">AI Health Recommendations</h2>
+                
+                <div class="treatment-plan">
+                    <h3>Personalized Fitness Plan</h3>
+                    <p>Based on your activity levels and health metrics, our AI suggests:</p>
+                    
+                    <div class="plan-steps">
+                        <div class="plan-step">
+                            <div class="step-number">1</div>
+                            <div>Increase daily steps to 10,000 for optimal cardiovascular health</div>
+                        </div>
+                        <div class="plan-step">
+                            <div class="step-number">2</div>
+                            <div>Add strength training 2 times per week</div>
+                        </div>
+                        <div class="plan-step">
+                            <div class="step-number">3</div>
+                            <div>Practice mindfulness meditation for 10 minutes daily</div>
+                        </div>
+                        <div class="plan-step">
+                            <div class="step-number">4</div>
+                            <div>Maintain consistent sleep schedule (11 PM - 7 AM)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- APPOINTMENTS PAGE -->
+        <section id="appointments" class="page">
+            <div class="hero">
+                <h1>APPOINTMENTS</h1>
+                <p>Schedule and manage your medical appointments with our AI-powered system and smart recommendations.</p>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">Book Appointment with AI Scheduler</h2>
+                <div class="appointment-form">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" class="form-control" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="Your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="doctor">Preferred Specialist</label>
+                        <select id="doctor" class="form-control">
+                            <option>Allergist</option>
+                            <option>Cardiologist</option>
+                            <option>Dermatologist</option>
+                            <option>Neurologist</option>
+                            <option>Orthopedist</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Preferred Date</label>
+                        <input type="date" id="date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="symptoms">Additional Symptoms</label>
+                        <textarea id="symptoms" class="form-control" rows="3" placeholder="Describe any additional symptoms..."></textarea>
+                    </div>
+                </div>
+                <button class="btn" id="schedule-appointment-btn" style="margin-top: 30px; width: 100%;">
+                    <span id="schedule-text">SCHEDULE WITH AI ASSISTANT</span>
+                    <span id="schedule-loading" class="loading" style="display: none;"></span>
+                </button>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">Upcoming Appointments</h2>
+                
+                <div class="patient-records">
+                    <div class="record-card">
+                        <div class="record-header">
+                            <h3>Dr. Sarah Johnson</h3>
+                            <span class="record-status status-pending">Pending</span>
+                        </div>
+                        <p><strong>Specialty:</strong> Cardiologist</p>
+                        <p><strong>Date:</strong> June 15, 2023 - 10:30 AM</p>
+                        <p><strong>Reason:</strong> Annual heart checkup</p>
+                    </div>
+                    
+                    <div class="record-card">
+                        <div class="record-header">
+                            <h3>Dr. Michael Chen</h3>
+                            <span class="record-status status-completed">Completed</span>
+                        </div>
+                        <p><strong>Specialty:</strong> Allergist</p>
+                        <p><strong>Date:</strong> May 28, 2023 - 2:15 PM</p>
+                        <p><strong>Reason:</strong> Allergy testing and consultation</p>
+                    </div>
+                    
+                    <div class="record-card">
+                        <div class="record-header">
+                            <h3>Dr. Emily Rodriguez</h3>
+                            <span class="record-status status-pending">Pending</span>
+                        </div>
+                        <p><strong>Specialty:</strong> Dermatologist</p>
+                        <p><strong>Date:</strong> July 5, 2023 - 11:00 AM</p>
+                        <p><strong>Reason:</strong> Skin condition evaluation</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MEDICAL IMAGING PAGE -->
+        <section id="medical-imaging" class="page">
+            <div class="hero">
+                <h1>MEDICAL IMAGING AI</h1>
+                <p>Advanced AI analysis of medical images for accurate diagnosis and treatment planning with deep learning algorithms.</p>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">Upload Medical Images for AI Analysis</h2>
+                
+                <div class="medical-image" id="upload-area">
+                    <div style="text-align: center;">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag & Drop or Click to Upload Medical Images</p>
+                        <p class="small">Supports: X-Ray, MRI, CT Scan, Ultrasound</p>
+                    </div>
+                </div>
+
+                <div class="dashboard" style="margin-top: 40px;">
+                    <div class="dashboard-card">
+                        <h3>X-Ray Analysis</h3>
+                        <div class="chart-container">
+                            <canvas id="xrayAnalysisChart"></canvas>
+                        </div>
+                        <p style="margin-top: 15px; text-align: center;">AI Detection: <strong>No abnormalities detected</strong></p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>MRI Analysis</h3>
+                        <div class="chart-container">
+                            <canvas id="mriAnalysisChart"></canvas>
+                        </div>
+                        <p style="margin-top: 15px; text-align: center;">AI Detection: <strong>Minor inflammation detected</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">AI-Powered Image Insights</h2>
+                
+                <div class="ai-prediction">
+                    <h3>X-Ray Analysis Results</h3>
+                    <p>The AI has analyzed your chest X-ray and provided the following assessment:</p>
+                    
+                    <div class="prediction-item">
+                        <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                            <span>Pneumonia Detection</span>
+                            <span>3%</span>
+                        </div>
+                        <div class="prediction-bar">
+                            <div class="prediction-fill" style="width: 3%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="prediction-item">
+                        <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                            <span>Tuberculosis Detection</span>
+                            <span>1%</span>
+                        </div>
+                        <div class="prediction-bar">
+                            <div class="prediction-fill" style="width: 1%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="prediction-item">
+                        <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                            <span>Fracture Detection</span>
+                            <span>0%</span>
+                        </div>
+                        <div class="prediction-bar">
+                            <div class="prediction-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="treatment-plan">
+                    <h3>Recommendations</h3>
+                    <p>Based on the AI analysis of your medical images:</p>
+                    
+                    <div class="plan-steps">
+                        <div class="plan-step">
+                            <div class="step-number">1</div>
+                            <div>No immediate concerns detected in the X-ray images</div>
+                        </div>
+                        <div class="plan-step">
+                            <div class="step-number">2</div>
+                            <div>Follow up with primary care physician in 6 months for routine checkup</div>
+                        </div>
+                        <div class="plan-step">
+                            <div class="step-number">3</div>
+                            <div>Continue current treatment plan as prescribed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PATIENT RECORDS PAGE -->
+        <section id="patient-records" class="page">
+            <div class="hero">
+                <h1>PATIENT RECORDS</h1>
+                <p>Secure, AI-enhanced access to your complete medical history and health records with predictive analytics.</p>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">Medical History & Records</h2>
+                
+                <div class="patient-records">
+                    <div class="record-card">
+                        <div class="record-header">
+                            <h3>Annual Physical Exam</h3>
+                            <span class="record-date">May 15, 2023</span>
+                        </div>
+                        <p><strong>Provider:</strong> Dr. James Wilson</p>
+                        <p><strong>Findings:</strong> Overall health excellent. Blood pressure slightly elevated.</p>
+                        <p><strong>Recommendations:</strong> Reduce sodium intake, increase physical activity.</p>
+                    </div>
+                    
+                    <div class="record-card">
+                        <div class="record-header">
+                            <h3>Allergy Testing</h3>
+                            <span class="record-date">April 22, 2023</span>
+                        </div>
+                        <p><strong>Provider:</strong> Dr. Michael Chen</p>
+                        <p><strong>Findings:</strong> Mild allergies to pollen and dust mites detected.</p>
+                        <p><strong>Recommendations:</strong> Prescribed antihistamines, recommended air purifier.</p>
+                    </div>
+                    
+                    <div class="record-card">
+                        <div class="record-header">
+                            <h3>Dermatology Consultation</h3>
+                            <span class="record-date">March 10, 2023</span>
+                        </div>
+                        <p><strong>Provider:</strong> Dr. Emily Rodriguez</p>
+                        <p><strong>Findings:</strong> Benign skin mole, no concerning features.</p>
+                        <p><strong>Recommendations:</strong> Monitor for changes, use sunscreen daily.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">AI-Generated Health Timeline</h2>
+                <div class="dashboard-card">
+                    <div class="chart-container">
+                        <canvas id="healthTimelineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">Medication History</h2>
+                
+                <div class="treatment-plan">
+                    <h3>Current Medications</h3>
+                    
+                    <div class="plan-steps">
+                        <div class="plan-step">
+                            <div class="step-number">1</div>
+                            <div>Loratadine (10mg) - Once daily for allergies</div>
+                        </div>
+                        <div class="plan-step">
+                            <div class="step-number">2</div>
+                            <div>Vitamin D (1000 IU) - Once daily for bone health</div>
+                        </div>
+                        <div class="plan-step">
+                            <div class="step-number">3</div>
+                            <div>Omega-3 Fish Oil - Once daily for heart health</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="drug-interaction">
+                    <h3><i class="fas fa-info-circle"></i> Medication Adherence</h3>
+                    <p>Based on your prescription records, you have 92% medication adherence rate. Excellent job!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI RESEARCH PAGE -->
+        <section id="ai-research" class="page">
+            <div class="hero">
+                <h1>AI RESEARCH LAB</h1>
+                <p>Explore cutting-edge AI research in healthcare, drug discovery, and medical technology.</p>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">AI Drug Discovery</h2>
+                
+                <div class="dashboard">
+                    <div class="dashboard-card">
+                        <h3>Drug Compound Analysis</h3>
+                        <div class="chart-container">
+                            <canvas id="drugDiscoveryChart"></canvas>
+                        </div>
+                        <p style="margin-top: 15px; text-align: center;">AI has identified 3 promising compounds for further research</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Clinical Trial Predictions</h3>
+                        <div class="chart-container">
+                            <canvas id="clinicalTrialChart"></canvas>
+                        </div>
+                        <p style="margin-top: 15px; text-align: center;">AI predicts 78% success rate for current trials</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">AI Research Projects</h2>
+                
+                <div class="ai-features-grid">
+                    <div class="ai-feature">
+                        <i class="fas fa-vial"></i>
+                        <h3>Drug Repurposing</h3>
+                        <p>AI identifies existing drugs for new therapeutic uses</p>
+                    </div>
+                    <div class="ai-feature">
+                        <i class="fas fa-microscope"></i>
+                        <h3>Genomic Medicine</h3>
+                        <p>Personalized treatments based on genetic profiles</p>
+                    </div>
+                    <div class="ai-feature">
+                        <i class="fas fa-procedures"></i>
+                        <h3>Surgical Robotics</h3>
+                        <p>AI-assisted precision surgery with robotics</p>
+                    </div>
+                    <div class="ai-feature">
+                        <i class="fas fa-virus"></i>
+                        <h3>Pandemic Prediction</h3>
+                        <p>Early detection and modeling of disease outbreaks</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">Research Publications</h2>
+                
+                <div class="patient-records">
+                    <div class="record-card">
+                        <div class="record-header">
+                            <h3>Deep Learning for Medical Imaging</h3>
+                            <span class="record-date">2023</span>
+                        </div>
+                        <p><strong>Journal:</strong> Nature Medicine</p>
+                        <p><strong>Findings:</strong> Our AI model achieved 98.7% accuracy in detecting early-stage cancer from medical images.</p>
+                        <p><strong>Impact Factor:</strong> 87.2</p>
+                    </div>
+                    
+                    <div class="record-card">
+                        <div class="record-header">
+                            <h3>AI in Drug Discovery</h3>
+                            <span class="record-date">2023</span>
+                        </div>
+                        <p><strong>Journal:</strong> Science</p>
+                        <p><strong>Findings:</strong> Machine learning reduced drug discovery time by 70% while increasing success rates.</p>
+                        <p><strong>Impact Factor:</strong> 63.8</p>
+                    </div>
+                    
+                    <div class="record-card">
+                        <div class="record-header">
+                            <h3>Predictive Health Analytics</h3>
+                            <span class="record-date">2022</span>
+                        </div>
+                        <p><strong>Journal:</strong> The Lancet</p>
+                        <p><strong>Findings:</strong> Our predictive models can identify at-risk patients 6 months before clinical symptoms appear.</p>
+                        <p><strong>Impact Factor:</strong> 79.3</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SURGERY SIMULATOR PAGE -->
+        <section id="surgery-simulator" class="page">
+            <div class="hero">
+                <h1>AI SURGERY SIMULATOR</h1>
+                <p>Practice complex surgical procedures with AI guidance in a risk-free virtual environment.</p>
+            </div>
+
+            <div class="ai-surgery-simulator">
+                <h2 class="section-title">Virtual Surgery Training</h2>
+                <p>Our AI-powered surgery simulator provides realistic training for medical professionals with real-time feedback and performance analytics.</p>
+                
+                <div class="surgery-canvas">
+                    <i class="fas fa-syringe" style="font-size: 4rem;"></i>
+                    <p>Virtual Surgery Environment Loading...</p>
+                </div>
+                
+                <div class="surgery-controls">
+                    <button class="surgery-btn" id="start-surgery">Start Procedure</button>
+                    <button class="surgery-btn" id="pause-surgery">Pause</button>
+                    <button class="surgery-btn" id="reset-surgery">Reset</button>
+                </div>
+                
+                <div class="health-metrics" style="margin-top: 30px;">
+                    <div class="metric">
+                        <div>Procedure Accuracy</div>
+                        <div class="metric-value">87%</div>
+                    </div>
+                    <div class="metric">
+                        <div>Time Elapsed</div>
+                        <div class="metric-value">4:32</div>
+                    </div>
+                    <div class="metric">
+                        <div>AI Assistance Level</div>
+                        <div class="metric-value">Medium</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">Surgical Procedure Library</h2>
+                
+                <div class="ai-features-grid">
+                    <div class="ai-feature">
+                        <i class="fas fa-heart"></i>
+                        <h3>Cardiac Surgery</h3>
+                        <p>Practice complex heart procedures with AI guidance</p>
+                    </div>
+                    <div class="ai-feature">
+                        <i class="fas fa-brain"></i>
+                        <h3>Neurosurgery</h3>
+                        <p>Precise brain surgery simulations with real-time feedback</p>
+                    </div>
+                    <div class="ai-feature">
+                        <i class="fas fa-bone"></i>
+                        <h3>Orthopedic Surgery</h3>
+                        <p>Joint replacement and fracture repair simulations</p>
+                    </div>
+                    <div class="ai-feature">
+                        <i class="fas fa-eye"></i>
+                        <h3>Ophthalmic Surgery</h3>
+                        <p>Delicate eye surgery procedures with magnification</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-section">
+                <h2 class="section-title">Performance Analytics</h2>
+                <div class="dashboard">
+                    <div class="dashboard-card">
+                        <h3>Procedure Accuracy Over Time</h3>
+                        <div class="chart-container">
+                            <canvas id="surgeryAccuracyChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Skill Development</h3>
+                        <div class="chart-container">
+                            <canvas id="skillDevelopmentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2023 MediAI Pro - Advanced AI Healthcare Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Enhanced Backend Simulation
+        class MedicalAIBackend {
+            constructor() {
+                this.users = this.loadFromStorage('users') || {};
+                this.appointments = this.loadFromStorage('appointments') || [];
+                this.healthData = this.loadFromStorage('healthData') || {};
+                this.chatHistory = this.loadFromStorage('chatHistory') || [];
+                this.researchProjects = this.loadFromStorage('researchProjects') || {};
+                this.surgerySimulations = this.loadFromStorage('surgerySimulations') || {};
+                this.currentUser = this.loadFromStorage('currentUser') || 'demo-user';
+                
+                this.initializeDemoData();
+            }
+            
+            initializeDemoData() {
+                if (!this.healthData[this.currentUser]) {
+                    this.healthData[this.currentUser] = {
+                        heartRate: [72, 68, 70, 75, 71, 69, 73],
+                        sleep: [7.5, 6.8, 7.2, 7.0, 6.5, 8.2, 7.8],
+                        activity: [40, 25, 20, 15],
+                        bloodTests: {
+                            glucose: 95,
+                            cholesterol: 180,
+                            hemoglobin: 14.2
+                        },
+                        symptoms: [],
+                        diagnoses: [],
+                        medications: [
+                            { name: 'Loratadine', dosage: '10mg', frequency: 'Once daily' },
+                            { name: 'Vitamin D', dosage: '1000 IU', frequency: 'Once daily' },
+                            { name: 'Omega-3 Fish Oil', dosage: '1000mg', frequency: 'Once daily' }
+                        ],
+                        healthScore: 92,
+                        riskFactors: {
+                            cardiovascular: 12,
+                            diabetes: 8,
+                            respiratory: 5
+                        }
+                    };
+                    this.saveToStorage('healthData', this.healthData);
+                }
+                
+                if (this.appointments.length === 0) {
+                    this.appointments = [
+                        {
+                            id: 'APT-001',
+                            doctor: 'Dr. Sarah Johnson',
+                            specialty: 'Cardiologist',
+                            date: '2023-06-15',
+                            time: '10:30 AM',
+                            status: 'pending',
+                            reason: 'Annual heart checkup'
+                        },
+                        {
+                            id: 'APT-002',
+                            doctor: 'Dr. Michael Chen',
+                            specialty: 'Allergist',
+                            date: '2023-05-28',
+                            time: '2:15 PM',
+                            status: 'completed',
+                            reason: 'Allergy testing and consultation'
+                        },
+                        {
+                            id: 'APT-003',
+                            doctor: 'Dr. Emily Rodriguez',
+                            specialty: 'Dermatologist',
+                            date: '2023-07-05',
+                            time: '11:00 AM',
+                            status: 'pending',
+                            reason: 'Skin condition evaluation'
+                        }
+                    ];
+                    this.saveToStorage('appointments', this.appointments);
+                }
+                
+                if (Object.keys(this.researchProjects).length === 0) {
+                    this.researchProjects = {
+                        'drug-discovery': {
+                            name: 'Drug Discovery AI',
+                            description: 'Accelerating pharmaceutical research with machine learning',
+                            progress: 75,
+                            team: ['Dr. Chen', 'Dr. Rodriguez', 'AI Specialist'],
+                            publications: 12
+                        },
+                        'surgical-robotics': {
+                            name: 'Surgical Robotics',
+                            description: 'AI-powered precision surgery with robotic assistance',
+                            progress: 60,
+                            team: ['Dr. Johnson', 'Robotics Engineer', 'AI Specialist'],
+                            publications: 8
+                        },
+                        'pandemic-prediction': {
+                            name: 'Pandemic Prediction',
+                            description: 'Early detection and modeling of infectious disease outbreaks',
+                            progress: 82,
+                            team: ['Dr. Wilson', 'Data Scientist', 'Epidemiologist'],
+                            publications: 15
+                        }
+                    };
+                    this.saveToStorage('researchProjects', this.researchProjects);
+                }
+            }
+            
+            // Simulate API calls with realistic delays and error handling
+            async simulateApiCall(data, delay = 1500, successRate = 0.95) {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        if (Math.random() < successRate) {
+                            resolve(data);
+                        } else {
+                            reject(new Error('API request failed. Please try again.'));
+                        }
+                    }, delay);
+                });
+            }
+            
+            // Advanced symptom analysis with machine learning simulation
+            async analyzeSymptoms(symptoms) {
+                const symptomDatabase = {
+                    "headache": { 
+                        diagnosis: "Tension headache", 
+                        confidence: 87, 
+                        severity: "Mild", 
+                        urgency: "Low",
+                        recommendations: ["Rest in a quiet room", "Stay hydrated", "Consider over-the-counter pain relief"],
+                        relatedConditions: ["Migraine", "Sinusitis", "Hypertension"]
+                    },
+                    "cough": { 
+                        diagnosis: "Upper respiratory infection", 
+                        confidence: 92, 
+                        severity: "Moderate", 
+                        urgency: "Medium",
+                        recommendations: ["Increase fluid intake", "Use cough drops", "Get plenty of rest"],
+                        relatedConditions: ["Bronchitis", "Pneumonia", "COVID-19"]
+                    },
+                    "fever": { 
+                        diagnosis: "Viral infection", 
+                        confidence: 78, 
+                        severity: "Moderate", 
+                        urgency: "Medium",
+                        recommendations: ["Rest and hydrate", "Monitor temperature", "Consult doctor if fever persists beyond 3 days"],
+                        relatedConditions: ["Influenza", "COVID-19", "Bacterial infection"]
+                    },
+                    "chest pain": { 
+                        diagnosis: "Possible cardiac issue", 
+                        confidence: 65, 
+                        severity: "High", 
+                        urgency: "High",
+                        recommendations: ["Seek immediate medical attention", "Do not ignore symptoms", "Call emergency services if severe"],
+                        relatedConditions: ["Angina", "Heart attack", "Pulmonary embolism"]
+                    },
+                    "fatigue": { 
+                        diagnosis: "Possible anemia or sleep disorder", 
+                        confidence: 72, 
+                        severity: "Mild", 
+                        urgency: "Low",
+                        recommendations: ["Improve sleep hygiene", "Check iron levels", "Consider stress reduction techniques"],
+                        relatedConditions: ["Anemia", "Sleep apnea", "Chronic fatigue syndrome"]
+                    }
+                };
+
+                // Advanced NLP simulation - find best matching symptoms
+                let bestMatch = { 
+                    diagnosis: "General symptoms", 
+                    confidence: 45, 
+                    severity: "Unknown", 
+                    urgency: "Low", 
+                    recommendations: ["Consult with a healthcare provider for accurate diagnosis"],
+                    relatedConditions: []
+                };
+                let highestConfidence = 0;
+
+                // Tokenize and analyze symptoms
+                const tokens = symptoms.toLowerCase().split(/\s+/);
+                
+                for (const [key, value] of Object.entries(symptomDatabase)) {
+                    let matchScore = 0;
+                    
+                    // Check for exact matches
+                    if (tokens.includes(key)) {
+                        matchScore += 100;
+                    }
+                    
+                    // Check for partial matches
+                    tokens.forEach(token => {
+                        if (key.includes(token) || value.diagnosis.toLowerCase().includes(token)) {
+                            matchScore += 50;
+                        }
+                    });
+                    
+                    // Check for related conditions
+                    value.relatedConditions.forEach(condition => {
+                        if (symptoms.toLowerCase().includes(condition.toLowerCase())) {
+                            matchScore += 30;
+                        }
+                    });
+                    
+                    if (matchScore > highestConfidence) {
+                        bestMatch = value;
+                        highestConfidence = matchScore;
+                    }
+                }
+                
+                // Add symptom to user history
+                if (!this.healthData[this.currentUser].symptoms) {
+                    this.healthData[this.currentUser].symptoms = [];
+                }
+                this.healthData[this.currentUser].symptoms.push({
+                    description: symptoms,
+                    date: new Date().toISOString(),
+                    diagnosis: bestMatch.diagnosis,
+                    confidence: bestMatch.confidence
+                });
+                this.saveToStorage('healthData', this.healthData);
+                
+                return await this.simulateApiCall(bestMatch, 2000, 0.98);
+            }
+            
+            // Schedule appointment with AI recommendations
+            async scheduleAppointment(appointmentData) {
+                const confirmation = {
+                    id: 'APT-' + Math.floor(1000 + Math.random() * 9000),
+                    date: appointmentData.date,
+                    doctor: appointmentData.doctor,
+                    time: this.generateOptimalTime(),
+                    status: 'Scheduled',
+                    message: 'Your appointment has been scheduled successfully. You will receive a confirmation email shortly.',
+                    aiRecommendations: this.generateAIRecommendations(appointmentData.symptoms)
+                };
+                
+                this.appointments.push({
+                    id: confirmation.id,
+                    doctor: appointmentData.doctor,
+                    specialty: this.getSpecialtyFromDoctor(appointmentData.doctor),
+                    date: appointmentData.date,
+                    time: confirmation.time,
+                    status: 'pending',
+                    reason: appointmentData.symptoms || 'General consultation'
+                });
+                this.saveToStorage('appointments', this.appointments);
+                
+                return await this.simulateApiCall(confirmation, 1500, 0.99);
+            }
+            
+            generateOptimalTime() {
+                const times = ['9:00 AM', '10:30 AM', '1:00 PM', '2:30 PM', '4:00 PM'];
+                return times[Math.floor(Math.random() * times.length)];
+            }
+            
+            generateAIRecommendations(symptoms) {
+                if (!symptoms) return [];
+                
+                const recommendations = [
+                    "Bring any previous test results with you",
+                    "Prepare a list of current medications",
+                    "Note any allergies you have",
+                    "Write down questions you want to ask the doctor"
+                ];
+                
+                if (symptoms.toLowerCase().includes('pain')) {
+                    recommendations.push("Note the intensity and location of your pain on a scale of 1-10");
+                }
+                
+                if (symptoms.toLowerCase().includes('fever')) {
+                    recommendations.push("Record your temperature pattern over the last few days");
+                }
+                
+                return recommendations;
+            }
+            
+            getSpecialtyFromDoctor(doctor) {
+                const specialties = {
+                    "Dr. Sarah Johnson": "Cardiologist",
+                    "Dr. Michael Chen": "Allergist",
+                    "Dr. Emily Rodriguez": "Dermatologist",
+                    "Dr. James Wilson": "General Practitioner"
+                };
+                
+                return specialties[doctor] || "Specialist";
+            }
+            
+            // Get comprehensive health data
+            async getHealthData() {
+                return await this.simulateApiCall(this.healthData[this.currentUser], 800, 0.99);
+            }
+            
+            // AI Chatbot responses
+            async getChatResponse(message) {
+                const responses = {
+                    "hello": "Hello! I'm your MediAI assistant. How can I help you with your health concerns today?",
+                    "hi": "Hi there! I'm here to assist with your medical questions. What would you like to know?",
+                    "symptoms": "I can help analyze your symptoms. Please describe what you're experiencing in detail.",
+                    "appointment": "I can help you schedule an appointment. Would you like me to find available times?",
+                    "medication": "I can provide information about medications and check for interactions. What medication are you taking?",
+                    "emergency": "If this is a medical emergency, please call emergency services immediately. I can provide general health information but cannot handle emergencies."
+                };
+                
+                // Simple keyword matching for demo purposes
+                let response = "I understand you're asking about health. Could you provide more details so I can assist you better?";
+                
+                for (const [key, value] of Object.entries(responses)) {
+                    if (message.toLowerCase().includes(key)) {
+                        response = value;
+                        break;
+                    }
+                }
+                
+                // Save chat history
+                this.chatHistory.push({
+                    user: message,
+                    bot: response,
+                    timestamp: new Date().toISOString()
+                });
+                this.saveToStorage('chatHistory', this.chatHistory);
+                
+                return await this.simulateApiCall(response, 1000, 0.98);
+            }
+            
+            // Get research projects
+            async getResearchProjects() {
+                return await this.simulateApiCall(this.researchProjects, 1200, 0.99);
+            }
+            
+            // Simulate surgery procedure
+            async simulateSurgery(procedure) {
+                const simulation = {
+                    procedure: procedure,
+                    startTime: new Date().toISOString(),
+                    accuracy: Math.floor(70 + Math.random() * 30),
+                    duration: Math.floor(120 + Math.random() * 300), // seconds
+                    complications: Math.random() < 0.2 ? 1 : 0,
+                    aiAssistance: true
+                };
+                
+                if (!this.surgerySimulations[this.currentUser]) {
+                    this.surgerySimulations[this.currentUser] = [];
+                }
+                this.surgerySimulations[this.currentUser].push(simulation);
+                this.saveToStorage('surgerySimulations', this.surgerySimulations);
+                
+                return await this.simulateApiCall(simulation, 2500, 0.97);
+            }
+            
+            // Generate health forecast
+            async generateHealthForecast() {
+                const currentHealth = this.healthData[this.currentUser].healthScore;
+                const forecast = {
+                    current: currentHealth,
+                    threeMonths: Math.max(60, currentHealth - 3),
+                    sixMonths: Math.max(55, currentHealth - 7),
+                    oneYear: Math.max(50, currentHealth - 11),
+                    recommendations: [
+                        "Increase weekly exercise to 150 minutes of moderate activity",
+                        "Reduce processed food consumption by 30%",
+                        "Implement stress reduction techniques daily"
+                    ]
+                };
+                
+                return await this.simulateApiCall(forecast, 1800, 0.99);
+            }
+            
+            // Storage helpers
+            loadFromStorage(key) {
+                try {
+                    return JSON.parse(localStorage.getItem(key));
+                } catch (e) {
+                    console.error('Error loading from storage:', e);
+                    return null;
+                }
+            }
+            
+            saveToStorage(key, value) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(value));
+                } catch (e) {
+                    console.error('Error saving to storage:', e);
+                }
+            }
+        }
+
+        // DOM Elements
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+        
+        // Initialize backend
+        const backend = new MedicalAIBackend();
+
+        // Show Notification
+        function showNotification(message, duration = 3000) {
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        // Navigation
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetPage = link.getAttribute('data-page');
+                
+                // Update active nav link
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Show target page
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                    if (page.id === targetPage) {
+                        page.classList.add('active');
+                    }
+                });
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            });
+        });
+
+        // Initialize Charts
+        function initializeCharts() {
+            // Heart Rate Chart
+            const heartRateCtx = document.getElementById('heartRateChart').getContext('2d');
+            new Chart(heartRateCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'BPM',
+                        data: [72, 68, 70, 75, 71, 69, 73],
+                        borderColor: '#3a86ff',
+                        backgroundColor: 'rgba(58, 134, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        }
+                    }
+                }
+            });
+
+            // Sleep Chart
+            const sleepCtx = document.getElementById('sleepChart').getContext('2d');
+            new Chart(sleepCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Hours',
+                        data: [7.5, 6.8, 7.2, 7.0, 6.5, 8.2, 7.8],
+                        backgroundColor: '#00dbde',
+                        borderColor: '#00dbde',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        }
+                    }
+                }
+            });
+
+            // Activity Chart
+            const activityCtx = document.getElementById('activityChart').getContext('2d');
+            new Chart(activityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Walking', 'Running', 'Cycling', 'Swimming'],
+                    datasets: [{
+                        data: [40, 25, 20, 15],
+                        backgroundColor: ['#3a86ff', '#00dbde', '#ff006e', '#8338ec'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Blood Test Chart
+            const bloodTestCtx = document.getElementById('bloodTestChart').getContext('2d');
+            new Chart(bloodTestCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Glucose', 'Cholesterol', 'Hemoglobin'],
+                    datasets: [{
+                        label: 'Your Levels',
+                        data: [95, 180, 14.2],
+                        backgroundColor: '#3a86ff',
+                        borderColor: '#3a86ff',
+                        borderWidth: 1
+                    }, {
+                        label: 'Normal Range Max',
+                        data: [100, 200, 15.5],
+                        backgroundColor: '#00dbde',
+                        borderColor: '#00dbde',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create Neural Network Visualization
+        function createNeuralNetwork() {
+            const container = document.getElementById('neural-network');
+            container.innerHTML = '';
+            
+            // Create layers
+            const layers = 5;
+            const neuronsPerLayer = [3, 4, 5, 4, 2];
+            
+            for (let layer = 0; layer < layers; layer++) {
+                for (let neuron = 0; neuron < neuronsPerLayer[layer]; neuron++) {
+                    const neuronEl = document.createElement('div');
+                    neuronEl.className = 'neuron';
+                    
+                    // Position neurons in layers
+                    const x = (layer / (layers - 1)) * 80 + 10;
+                    const y = (neuron / (neuronsPerLayer[layer] - 1)) * 80 + 10;
+                    
+                    neuronEl.style.left = `${x}%`;
+                    neuronEl.style.top = `${y}%`;
+                    neuronEl.style.animationDelay = `${(layer + neuron) * 0.2}s`;
+                    
+                    container.appendChild(neuronEl);
+                    
+                    // Create connections to next layer
+                    if (layer < layers - 1) {
+                        for (let nextNeuron = 0; nextNeuron < neuronsPerLayer[layer + 1]; nextNeuron++) {
+                            const connection = document.createElement('div');
+                            connection.className = 'connection';
+                            
+                            const nextX = ((layer + 1) / (layers - 1)) * 80 + 10;
+                            const nextY = (nextNeuron / (neuronsPerLayer[layer + 1] - 1)) * 80 + 10;
+                            
+                            const length = Math.sqrt(Math.pow(nextX - x, 2) + Math.pow(nextY - y, 2));
+                            const angle = Math.atan2(nextY - y, nextX - x) * 180 / Math.PI;
+                            
+                            connection.style.width = `${length}%`;
+                            connection.style.left = `${x}%`;
+                            connection.style.top = `${y}%`;
+                            connection.style.transform = `rotate(${angle}deg)`;
+                            connection.style.opacity = 0.3 + Math.random() * 0.7;
+                            
+                            container.appendChild(connection);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Symptom Analysis
+        document.getElementById('analyze-symptoms-btn').addEventListener('click', async function() {
+            const symptomInput = document.getElementById('symptom-input');
+            const diagnosisResult = document.getElementById('diagnosis-result');
+            const diagnosisText = document.getElementById('diagnosis-text');
+            const analyzeText = document.getElementById('analyze-text');
+            const analyzeLoading = document.getElementById('analyze-loading');
+            
+            if (!symptomInput.value.trim()) {
+                showNotification('Please describe your symptoms before analyzing.');
+                return;
+            }
+            
+            // Show loading state
+            analyzeText.style.display = 'none';
+            analyzeLoading.style.display = 'inline-block';
+            this.disabled = true;
+            
+            try {
+                const result = await backend.analyzeSymptoms(symptomInput.value);
+                
+                // Update UI with results
+                diagnosisText.textContent = `Based on your symptoms, our AI has detected ${result.confidence}% probability of ${result.diagnosis}. ${result.recommendations.join(' ')}`;
+                
+                // Update metrics
+                document.querySelectorAll('.metric-value')[0].textContent = `${result.confidence}%`;
+                document.querySelectorAll('.metric-value')[1].textContent = result.severity;
+                document.querySelectorAll('.metric-value')[2].textContent = result.urgency;
+                
+                // Show result
+                diagnosisResult.style.display = 'block';
+                showNotification('Symptom analysis completed successfully!');
+            } catch (error) {
+                showNotification('Error analyzing symptoms. Please try again.');
+                console.error(error);
+            } finally {
+                // Reset button
+                analyzeText.style.display = 'inline-block';
+                analyzeLoading.style.display = 'none';
+                this.disabled = false;
+            }
+        });
+
+        // Schedule Appointment
+        document.getElementById('schedule-appointment-btn').addEventListener('click', async function() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const doctor = document.getElementById('doctor').value;
+            const date = document.getElementById('date').value;
+            const symptoms = document.getElementById('symptoms').value;
+            
+            if (!name || !email || !date) {
+                showNotification('Please fill in all required fields.');
+                return;
+            }
+            
+            // Show loading state
+            const scheduleText = document.getElementById('schedule-text');
+            const scheduleLoading = document.getElementById('schedule-loading');
+            scheduleText.style.display = 'none';
+            scheduleLoading.style.display = 'inline-block';
+            this.disabled = true;
+            
+            try {
+                const result = await backend.scheduleAppointment({
+                    name, email, doctor, date, symptoms
+                });
+                
+                showNotification(`Appointment scheduled successfully! Confirmation: ${result.id}`);
+                
+                // Reset form
+                document.getElementById('name').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('date').value = '';
+                document.getElementById('symptoms').value = '';
+            } catch (error) {
+                showNotification('Error scheduling appointment. Please try again.');
+                console.error(error);
+            } finally {
+                // Reset button
+                scheduleText.style.display = 'inline-block';
+                scheduleLoading.style.display = 'none';
+                this.disabled = false;
+            }
+        });
+
+        // AI Chatbot
+        const chatbotToggle = document.getElementById('chatbot-toggle');
+        const chatWindow = document.getElementById('chat-window');
+        const closeChat = document.getElementById('close-chat');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendMessage = document.getElementById('send-message');
+
+        chatbotToggle.addEventListener('click', () => {
+            chatWindow.classList.toggle('active');
+        });
+
+        closeChat.addEventListener('click', () => {
+            chatWindow.classList.remove('active');
+        });
+
+        sendMessage.addEventListener('click', async () => {
+            await sendChatMessage();
+        });
+
+        chatInput.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+                await sendChatMessage();
+            }
+        });
+
+        async function sendChatMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessageToChat(message, 'user');
+            chatInput.value = '';
+            
+            // Get AI response
+            try {
+                const response = await backend.getChatResponse(message);
+                addMessageToChat(response, 'bot');
+            } catch (error) {
+                addMessageToChat('Sorry, I encountered an error. Please try again.', 'bot');
+            }
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addMessageToChat(message, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender);
+            messageElement.textContent = message;
+            chatMessages.appendChild(messageElement);
+        }
+
+        // Surgery Simulator
+        document.getElementById('start-surgery').addEventListener('click', async function() {
+            showNotification('Starting surgical simulation...');
+            
+            try {
+                const result = await backend.simulateSurgery('Cardiac Procedure');
+                showNotification(`Surgery completed with ${result.accuracy}% accuracy!`);
+                
+                // Update metrics
+                document.querySelectorAll('.metric-value')[0].textContent = `${result.accuracy}%`;
+                document.querySelectorAll('.metric-value')[1].textContent = `${Math.floor(result.duration / 60)}:${(result.duration % 60).toString().padStart(2, '0')}`;
+            } catch (error) {
+                showNotification('Error during surgical simulation. Please try again.');
+                console.error(error);
+            }
+        });
+
+        // Image Upload Simulation
+        document.getElementById('upload-area').addEventListener('click', function() {
+            showNotification('Medical image upload functionality would be implemented in a production environment.');
+        });
+
+        // 3D Effects
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            createNeuralNetwork();
+            
+            const featureCards = document.querySelectorAll('.feature-card');
+            const btn = document.querySelector('.btn');
+            
+            // Add scroll effect to feature cards
+            window.addEventListener('scroll', () => {
+                const scrollY = window.scrollY;
+                const windowHeight = window.innerHeight;
+                
+                featureCards.forEach((card, index) => {
+                    const cardTop = card.getBoundingClientRect().top;
+                    const cardProgress = 1 - (cardTop / windowHeight);
+                    
+                    if (cardProgress > 0 && cardProgress < 1) {
+                        const rotation = cardProgress * 10;
+                        const translateZ = cardProgress * 50;
+                        card.style.transform = `perspective(500px) rotateY(${rotation}deg) translateZ(${translateZ}px)`;
+                    }
+                });
+            });
+            
+            // Add mouse move parallax effect
+            document.addEventListener('mousemove', (e) => {
+                const x = (window.innerWidth - e.pageX * 2) / 100;
+                const y = (window.innerHeight - e.pageY * 2) / 100;
+                
+                const logo = document.querySelector('.logo');
+                logo.style.transform = `perspective(500px) rotateY(${x}deg) rotateX(${y}deg)`;
+            });
+
+            // Get Health Analysis Button
+            document.getElementById('get-analysis-btn').addEventListener('click', function() {
+                showNotification('Comprehensive health analysis started. This may take a few moments...', 5000);
+                
+                // Simulate analysis completion after delay
+                setTimeout(() => {
+                    showNotification('Health analysis complete! Check your dashboard for results.');
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>
